@@ -27,6 +27,13 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  bool playerIsDead() {
+    if( playerYaxis < -1 || playerYaxis > 1) {
+      return true;
+    }
+    return false;
+  }
+
   void startGame() {
     gameHasStarted = true;
     Timer.periodic(Duration(milliseconds: 60), (timer) {
@@ -35,6 +42,16 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         playerYaxis = initialHeight - height;
       });
+
+      if(playerYaxis < -1 || playerYaxis > 1) {
+        timer.cancel();
+      }
+
+      if(playerIsDead()) {
+        timer.cancel();
+        gameHasStarted = false;
+        _showDialog();
+      }
 
       setState(() {
         if (barrierXone < -2) {
@@ -64,13 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
 
     return GestureDetector(
-      onTap: () {
-        if(gameHasStarted) {
-          jump();
-        } else {
-          startGame();
-        }
-      },
+      onTap: gameHasStarted ? jump : startGame,
       child: Scaffold(
         body: Column(
           children: [
@@ -147,6 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
   void _showDialog() {
     showDialog(context: context,
+        barrierDismissible: false,
         builder: (BuildContext context) {
           return AlertDialog(
             backgroundColor: Colors.brown,
@@ -157,6 +169,25 @@ class _HomeScreenState extends State<HomeScreen> {
             content: Text(
               'Score: ' + score.toString()
             ),
+            actions: [
+              GestureDetector(
+                onTap: (){
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder:
+                  (context) => HomeScreen()));
+                },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(5),
+                  child: Container(
+                    padding: EdgeInsets.all(7),
+                    color: Colors.white,
+                    child: Text(
+                      '다시하기',
+                      style: TextStyle(color: Colors.brown),
+                    ),
+                  ),
+                ),
+              )
+            ],
 
           );
         });
