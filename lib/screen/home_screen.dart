@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:sedol_jump/barriers.dart';
 import 'package:sedol_jump/entity/player.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -16,6 +17,8 @@ class _HomeScreenState extends State<HomeScreen> {
   double height = 0;
   double initialHeight = 0;
   bool gameHasStarted = false;
+  static double barrierXone = 1;
+  double barrierXtwo = barrierXone + 1.5;
 
   void jump() {
     setState(() {
@@ -27,11 +30,28 @@ class _HomeScreenState extends State<HomeScreen> {
   void startGame() {
     gameHasStarted = true;
     Timer.periodic(Duration(milliseconds: 60), (timer) {
-      time += 0.04;
+      time += 0.05;
       height = -4.9 * time * time + 2.8 * time;
       setState(() {
         playerYaxis = initialHeight - height;
       });
+
+      setState(() {
+        if (barrierXone < -2) {
+          barrierXone += 3.5;
+        } else {
+          barrierXone -= 0.05;
+        }
+      });
+
+      setState(() {
+        if (barrierXtwo < -2) {
+          barrierXtwo += 3.5;
+        } else {
+          barrierXtwo -= 0.05;
+        }
+      });
+
       if (playerYaxis > 1) {
         timer.cancel();
         gameHasStarted = false;
@@ -39,47 +59,75 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            flex: 2,
-            child: GestureDetector(
-              onTap: () {
-                if(gameHasStarted) {
-                  jump();
-                } else {
-                  startGame();
-                }
-              },
-              child: AnimatedContainer(
-                alignment: Alignment(0, playerYaxis),
-              duration: Duration(milliseconds: 0),
-              color: Colors.lightBlueAccent,
-                child: Player(),
+
+    return GestureDetector(
+      onTap: () {
+        if(gameHasStarted) {
+          jump();
+        } else {
+          startGame();
+        }
+      },
+      child: Scaffold(
+        body: Column(
+          children: [
+            Expanded(
+              flex: 2,
+              child: Stack(
+                children: [
+
+                    AnimatedContainer(
+                      alignment: Alignment(0, playerYaxis),
+                      duration: Duration(milliseconds: 0),
+                      color: Colors.lightBlueAccent,
+                      child: Player(),
+                    ),
+                  Container(
+                    alignment: Alignment(0, -0.3),
+                    child: gameHasStarted ? Text('') :
+                    Text("시작하려면 화면을 터치하세요",
+                    style: TextStyle(fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.yellow),),
+                  ),
+                  barriers(barrierXone, 1.1, 200.0, 0),
+                  barriers(barrierXone, -1.1, 200.0, 180),
+                  barriers(barrierXtwo, 1.1, 150.0, 0),
+                  barriers(barrierXtwo, -1.1, 250.0, 180),
+
+                ],
+              )
+            ),
+            Container(
+              height: 20,
+              color: Colors.blue,
+            ),
+            Expanded(child: Container(
+              color: Color(0xFFFFF8BE),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  score('SCORE', 0),
+                  score('BEST', 10),
+                ],
               ),
             ),
-          ),
-          Container(
-            height: 20,
-            color: Colors.blue,
-          ),
-          Expanded(child: Container(
-            color: Color(0xFFFFF8BE),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                score('SCORE', 0),
-                score('BEST', 10),
-              ],
             ),
-          ),
-          ),
-        ],
-      )
+          ],
+        )
+      ),
     );
+  }
+
+  AnimatedContainer barriers(double x, double y, double size, double degrees) {
+    return AnimatedContainer(
+                alignment: Alignment(x, y),
+                  duration: Duration(milliseconds: 0),
+                child: MyBarrier(size: size, degrees: degrees,),
+              );
   }
 
   Column score( String name, int score) {
@@ -97,4 +145,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               );
   }
+  void _showDialog() {
+    showDialog(context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: Colors.brown,
+            title: Text(
+              "끝!",
+              style: TextStyle(color: Colors.white),
+            ),
+            content: Text(
+              'Score: ' + score.toString()
+            ),
+
+          );
+        });
+  }
+
 }
