@@ -1,7 +1,8 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:sedol_jump/barriers.dart';
+import 'package:sedol_jump/entity/barriers.dart';
 import 'package:sedol_jump/entity/player.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -12,6 +13,21 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
+  int _counter = 0;
+  int best = 0;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        gameHasStarted ? _counter++ : _counter=0;
+      });
+    });
+  }
+
+
   double playerYaxis = 0;
   double time = 0;
   double height = 0;
@@ -19,6 +35,8 @@ class _HomeScreenState extends State<HomeScreen> {
   bool gameHasStarted = false;
   static double barrierXone = 1;
   double barrierXtwo = barrierXone + 1.5;
+
+
 
   void jump() {
     setState(() {
@@ -77,6 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
 
+
   @override
   Widget build(BuildContext context) {
 
@@ -89,7 +108,6 @@ class _HomeScreenState extends State<HomeScreen> {
               flex: 2,
               child: Stack(
                 children: [
-
                     AnimatedContainer(
                       alignment: Alignment(0, playerYaxis),
                       duration: Duration(milliseconds: 0),
@@ -104,10 +122,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         fontWeight: FontWeight.bold,
                         color: Colors.yellow),),
                   ),
-                  barriers(barrierXone, 1.1, 200.0, 0),
-                  barriers(barrierXone, -1.1, 200.0, 180),
-                  barriers(barrierXtwo, 1.1, 150.0, 0),
-                  barriers(barrierXtwo, -1.1, 250.0, 180),
+                  barriers(barrierXone, 1.1, 200.0, 0, 0),
+                  barriers(barrierXone, -1.1, 200.0, 180, 1),
+                  barriers(barrierXtwo, 1.1, 150.0, 0, 2),
+                  barriers(barrierXtwo, -1.1, 250.0, 180, 3),
 
                 ],
               )
@@ -121,8 +139,8 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  score('SCORE', 0),
-                  score('BEST', 10),
+                  score('SCORE', _counter),
+                  score('BEST', _counter > best ? best = _counter : best),
                 ],
               ),
             ),
@@ -133,11 +151,12 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  AnimatedContainer barriers(double x, double y, double size, double degrees) {
+
+  AnimatedContainer barriers(double x, double y, double size, double degrees, int randomIndex) {
     return AnimatedContainer(
                 alignment: Alignment(x, y),
                   duration: Duration(milliseconds: 0),
-                child: MyBarrier(size: size, degrees: degrees,),
+                child: MyBarrier(size: size, degrees: degrees, randomIndex: randomIndex,),
               );
   }
 
@@ -166,13 +185,15 @@ class _HomeScreenState extends State<HomeScreen> {
               "끝!",
               style: TextStyle(color: Colors.white),
             ),
-            content: Text(
-              'Score: ' + score.toString()
+            content: _counter > best ? Text(
+              'Wow 최고점수'
+            ) : Text(
+                'Score: $_counter' + '모시깽이한 점수네요'
             ),
             actions: [
               GestureDetector(
                 onTap: (){
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder:
+                  Navigator.push(context, MaterialPageRoute(builder:
                   (context) => HomeScreen()));
                 },
                 child: ClipRRect(
