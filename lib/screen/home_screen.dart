@@ -1,9 +1,15 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:sedol_jump/entity/barriers.dart';
 import 'package:sedol_jump/entity/player.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+late AssetsAudioPlayer _assetsAudioPlayer = AssetsAudioPlayer.newPlayer();
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -13,13 +19,28 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
+  AudioCache player = new AudioCache();
+
   int _counter = 0;
   int best = 0;
   Timer? _timer;
 
+
+
+
   @override
   void initState() {
     super.initState();
+
+    _assetsAudioPlayer.open(
+      Audio("assets/audios/bgm.mp3"),
+      loopMode: LoopMode.single, //반복 여부 (LoopMode.none : 없음)
+      autoStart: true, //자동 시작 여부
+      showNotification: false, //스마트폰 알림 창에 띄울지 여부
+    );
+
+    _assetsAudioPlayer.play();
+
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         gameHasStarted ? _counter++ : _counter=0;
@@ -52,6 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return false;
   }
 
+
   void startGame() {
     gameHasStarted = true;
     Timer.periodic(Duration(milliseconds: 60), (timer) {
@@ -63,6 +85,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
       if(playerYaxis < -1 || playerYaxis > 1) {
         timer.cancel();
+      }
+
+      if(playerYaxis == 0) {
+        timer.cancel();
+        gameHasStarted = false;
+        _showDialog();
       }
 
       if(playerIsDead()) {

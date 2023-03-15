@@ -6,8 +6,8 @@ class Player extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 60,
-      width: 60,
+      height: 100,
+      width: 100,
       child: Image.asset(
         'assets/images/jingburger.png'
       ),
