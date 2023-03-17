@@ -87,10 +87,16 @@ class _HomeScreenState extends State<HomeScreen> {
         timer.cancel();
       }
 
-      if(playerYaxis == 0) {
-        timer.cancel();
-        gameHasStarted = false;
-        _showDialog();
+      if(playerYaxis > 0) {
+        if(barrierXtwo <= 0.1 && (playerYaxis >= 0.3 || playerYaxis <= -0.3)){
+          timer.cancel();
+          gameHasStarted = false;
+          _showDialog();
+        } else if(barrierXtwo <= 0.1 && (playerYaxis >= 0.3 || playerYaxis <= -0.3)){
+          timer.cancel();
+          gameHasStarted = false;
+          _showDialog();
+        }
       }
 
       if(playerIsDead()) {

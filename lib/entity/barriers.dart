@@ -26,7 +26,7 @@ class MyBarrier extends StatelessWidget {
     double radians = degrees * math.pi / 180;
 
     return Container(
-        width: 100,
+        width: size * 0.5,
         height: size,
         child: Transform.rotate(
           angle: radians,
