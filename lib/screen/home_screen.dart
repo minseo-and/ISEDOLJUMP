@@ -19,11 +19,11 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
-  AudioCache player = new AudioCache();
 
   int _counter = 0;
   int best = 0;
   Timer? _timer;
+  double maxNumber = 100;
 
 
   @override
@@ -33,11 +33,9 @@ class _HomeScreenState extends State<HomeScreen> {
     _assetsAudioPlayer.open(
       Audio("assets/audios/bgm.mp3"),
       loopMode: LoopMode.single, //반복 여부 (LoopMode.none : 없음)
-      autoStart: true, //자동 시작 여부
       showNotification: false, //스마트폰 알림 창에 띄울지 여부
     );
 
-    _assetsAudioPlayer.play();
 
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
@@ -48,6 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
   double playerYaxis = 0;
+  bool musicOn = true;
   double time = 0;
   double height = 0;
   double initialHeight = 0;
@@ -126,6 +125,9 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void music() {
+    musicOn ? _assetsAudioPlayer.play() : _assetsAudioPlayer.pause();
+  }
 
 
   @override
@@ -134,6 +136,19 @@ class _HomeScreenState extends State<HomeScreen> {
     return GestureDetector(
       onTap: gameHasStarted ? jump : startGame,
       child: Scaffold(
+        appBar: AppBar(
+          actions: [
+            IconButton(onPressed: (){
+            }, icon: Icon(Icons.volume_down)),
+            IconButton(onPressed: (){
+              setState(() {
+                musicOn = !musicOn;
+                music();
+              });
+            }, icon: musicOn ? Icon(Icons.music_note) : Icon(Icons.music_off)),
+          ],
+
+        ),
         body: Column(
           children: [
             Expanded(
@@ -207,6 +222,39 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               );
   }
+
+  void onSliderChanged(double val) {
+    setState(() {
+      maxNumber = val;
+    });
+  }
+
+  // void _showSlide() {
+  //   showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //     return AlertDialog(
+  //       title: Text('Slider Dialog'),
+  //       content:  Slider(
+  //           value: maxNumber,
+  //           min: 1,
+  //           max: 100,
+  //           onChanged: onSliderChanged
+  //       ),
+  //       actions: <Widget>[
+  //         ElevatedButton(
+  //           child: Text('OK'),
+  //           onPressed: () {
+  //             Navigator.of(context).pop();
+  //           },
+  //         ),
+  //       ],
+  //     );
+  //   });
+  // }
+
+
+
   void _showDialog() {
     showDialog(context: context,
         barrierDismissible: false,
@@ -225,8 +273,10 @@ class _HomeScreenState extends State<HomeScreen> {
             actions: [
               GestureDetector(
                 onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder:
-                  (context) => HomeScreen()));
+                  playerYaxis = 0;
+                  gameHasStarted = false;
+                  build(context);
+                  Navigator.of(context).pop();
                 },
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(5),
