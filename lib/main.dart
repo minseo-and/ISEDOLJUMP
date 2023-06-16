@@ -1,8 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:sedol_jump/provider/game_provider.dart';
+import 'package:sedol_jump/provider/score_provider.dart';
 import 'package:sedol_jump/screen/home_screen.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => Score()),
+        ChangeNotifierProvider(create: (_) => GameDone()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -12,7 +23,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const HomeScreen(),
+      home: HomeScreen(),
     );
   }
 }

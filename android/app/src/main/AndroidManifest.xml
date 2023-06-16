@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.sedol_jump">
+    <uses-permission android:name="android.permission.INTERNET" />
    <application
         android:label="sedol_jump"
         android:name="${applicationName}"

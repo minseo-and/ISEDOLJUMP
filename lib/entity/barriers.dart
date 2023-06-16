@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
 class MyBarrier extends StatelessWidget {
-  final size;
+  final dimension;
   final double degrees;
   final int randomIndex;
 
   const MyBarrier(
       {super.key,
-      required this.size,
-      required this.degrees,
-      required this.randomIndex});
+        required this.dimension,
+        required this.degrees,
+        required this.randomIndex});
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +23,12 @@ class MyBarrier extends StatelessWidget {
 
     double radians = degrees * math.pi / 180;
 
+    double height = MediaQuery.of(context).size.height;
+    
+
     return Container(
-        width: size * 0.5,
-        height: size,
+        width: dimension * 0.5,
+        height: dimension,
         child: Transform.rotate(
           angle: radians,
           child: Image.asset(

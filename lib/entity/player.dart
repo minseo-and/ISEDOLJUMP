@@ -5,11 +5,11 @@ class Player extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
     return Container(
-      height: 100,
-      width: 100,
+      height: height * 0.1,
       child: Image.asset(
-        'assets/images/jingburger.png'
+          'assets/images/jingburger.png'
       ),
     );
   }
