@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sedol_jump/provider/game_provider.dart';
+import 'package:sedol_jump/provider/player_provider.dart';
 import 'package:sedol_jump/provider/score_provider.dart';
 import 'package:sedol_jump/screen/home_screen.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +11,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => Score()),
         ChangeNotifierProvider(create: (_) => GameDone()),
+        ChangeNotifierProvider(create: (_) => Avatar())
       ],
       child: MyApp(),
     ),

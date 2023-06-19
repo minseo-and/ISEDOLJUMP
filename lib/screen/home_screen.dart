@@ -3,13 +3,9 @@ import 'dart:async';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sedol_jump/entity/barriers.dart';
-import 'package:sedol_jump/entity/player.dart';
-import 'package:flutter_provider/flutter_provider.dart';
-import 'package:sedol_jump/provider/game_provider.dart';
 import 'package:sedol_jump/provider/score_provider.dart';
 import 'package:sedol_jump/screen/game.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sedol_jump/screen/setting_screen.dart';
 
 late AssetsAudioPlayer _assetsAudioPlayer = AssetsAudioPlayer.newPlayer();
 
@@ -63,16 +59,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    int my_score = context.watch<Score>().count;
-    int score1 = 0;
-    setState(() {
-      score1 = my_score;
-    });
+    int score3 = context.watch<Score>().count;
+    print(score3);
     return Scaffold(
         appBar: AppBar(
           actions: [
             IconButton(onPressed: (){
-            }, icon: Icon(Icons.volume_down)),
+              Navigator.push(
+                  context,
+                MaterialPageRoute(builder: (context) => SettingScreen())
+              );
+            }, icon: Icon(Icons.settings)),
             IconButton(onPressed: (){
               setState(() {
                 musicOn = !musicOn;
@@ -98,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    score('SCORE', score1
+                    score('SCORE', score3
                     ),
                     score('BEST', _counter > best ? best = _counter : best),
                   ],

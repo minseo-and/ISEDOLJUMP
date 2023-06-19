@@ -10,7 +10,7 @@ class Score extends ChangeNotifier {
   }
 
   void remove() {
-    _count--;
+    _count = 0;
     notifyListeners();
   }
 }

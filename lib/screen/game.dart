@@ -5,10 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:sedol_jump/entity/barriers.dart';
 import 'package:sedol_jump/entity/player.dart';
 import 'package:sedol_jump/provider/game_provider.dart';
-import 'package:sedol_jump/screen/home_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-import '../provider/score_provider.dart';
+import 'package:sedol_jump/provider/player_provider.dart';
+import 'package:sedol_jump/provider/score_provider.dart';
 
 class Game extends StatefulWidget {
   const Game({Key? key}) : super(key: key);
@@ -37,14 +35,12 @@ class _GameState extends State<Game> {
   void initState() {
     super.initState();
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        context.read<Score>().add();
-      });
     });
   }
 
   void jump() {
     setState(() {
+      context.read<Score>().add();
       time = 0;
       initialHeight = playerYaxis;
     });
@@ -98,8 +94,9 @@ class _GameState extends State<Game> {
   Widget build(BuildContext context) {
     bool playing = context.watch<GameDone>().playing;
     double height = MediaQuery.of(context).size.height;
-    print(time.toString());
-    print(playerYaxis.toString());
+    int score3 = context.watch<Score>().count;
+    String bg = context.watch<Avatar>().bg;
+    print(score3);
     return GestureDetector(
       onTap:playing ? jump : startGame,
       child: Stack(
@@ -108,7 +105,7 @@ class _GameState extends State<Game> {
             decoration: BoxDecoration(
               image: DecorationImage(
                 fit: BoxFit.cover,
-                image: AssetImage('assets/images/game_bg.png'), // 배경 이미지
+                image: AssetImage(bg), // 배경 이미지
               ),
             ),
             child: AnimatedContainer(
@@ -122,12 +119,13 @@ class _GameState extends State<Game> {
           barriers(barrierXtwo, 1.1, height * 0.2, 0, 2),
           barriers(barrierXtwo, -1.1, height * 0.25, 180, 3),
           Container(
-            alignment: Alignment(0, -0.3),
-            child: playing ? Text('') :
+            alignment: Alignment(0, -0.5),
+            child: playing ? Text('$score3') :
             Text("시작하려면 화면을 터치하세요",
               style: TextStyle(fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Colors.yellow),),
+                  color: Colors.white,),
+            ),
           ),
         ],
       ),
@@ -161,6 +159,7 @@ class _GameState extends State<Game> {
                 best = 0;
                 _timer;
                 maxNumber = 100;
+                context.read<Score>().remove();
                 Navigator.pop(context);
               },
               child: ClipRRect(
