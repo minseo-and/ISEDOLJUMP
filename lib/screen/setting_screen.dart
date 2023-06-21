@@ -11,8 +11,6 @@ class SettingScreen extends StatefulWidget {
 
 class _SettingScreenState extends State<SettingScreen> {
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,7 +76,6 @@ class _SettingScreenState extends State<SettingScreen> {
 
   void _setSelectedAvatar(BuildContext context, String character) {
     final avatarProvider = context.read<Avatar>();
-    // 문자열로 조건 분기하여 해당 캐릭터에 대한 함수 호출
     switch(character) {
       case 'viichan':
         avatarProvider.viichan();
